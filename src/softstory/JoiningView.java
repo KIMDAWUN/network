@@ -50,12 +50,6 @@ public class JoiningView extends JFrame{
 	public void placeJoiningPanel(JPanel panel_join) {
 		panel_join.setLayout(null);
 
-		/**
-		int v=ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
-		int h=ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
-		JScrollPane scrollPane=new JScrollPane(panel_join,v,h);
-		panel_join.add(scrollPane, BorderLayout.CENTER);
-		*/
 		JLabel FirstLabel1 = new JLabel("Welcome to Soft Story!");
 		JLabel FirstLabel2 = new JLabel("Please type your real information!");
 		FirstLabel1.setFont(font);

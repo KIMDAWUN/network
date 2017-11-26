@@ -9,18 +9,18 @@ public class MainProcess {
 	   ScheduleView scheduleView;
 	   MessengerView messengerView;
 	   SettingView settingView;
-	   
+
 	   public static void main(String[] args) {
 	      MainProcess main = new MainProcess();
 	      main.loginView = new LoginView();
 	      main.loginView.setMain(main);
 	   }
 	   
-	   public void showMainView(String ID){
+	   public void showMainView(String ID, String ip, int port){
 	      loginView.dispose();
 	      
 	      MainProcess main = new MainProcess();
-	      main.mainView = new MainView(ID);
+	      main.mainView = new MainView(ID, ip, port);
 	      main.mainView.setMain(main);
 	   }
 	   

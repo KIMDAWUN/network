@@ -2,6 +2,7 @@ package softstory;
 
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -11,11 +12,29 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import java.io.*;
+import java.net.*;
+
 public class MainView extends JFrame{
-	private MainProcess main;
+	 private MainProcess main;
 	 private ImageIcon img;
 	 
-	MainView(String ID) {
+	 private String id;
+	 private String ip;
+	 private int port;
+	 
+	 private Socket socket; // 연결소켓
+	 private InputStream is;
+	 private OutputStream os;
+	 private DataInputStream dis;
+	 private DataOutputStream dos;
+	 
+	MainView(String ID, String ip, int port) {
+		
+		this.id = ID;
+		this.ip = ip;
+		this.port = port;
+		
 		img = new ImageIcon("images//background.png");
 		
 		setTitle("Soft Story!");
@@ -38,9 +57,86 @@ public class MainView extends JFrame{
 		// add
 		add(panel_main);
 
-		// visiible
+		// visible
 		setVisible(true);
+		
+		//network
+		network();
+
 	}
+	
+	public void network(){
+		try {
+			socket = new Socket(ip, port);
+			if (socket != null){ //연결되었을때
+				Connection(); // 연결 메소드 호출
+			}
+		} catch (UnknownHostException e) {
+
+		} catch (IOException e) {
+			System.out.println("socket connection error");
+		}
+
+	}
+	
+	public void Connection() {
+
+		try { // 스트림 설정
+			is = socket.getInputStream();
+			dis = new DataInputStream(is);
+
+			os = socket.getOutputStream();
+			dos = new DataOutputStream(os);
+
+		} catch (IOException e) {
+			//textArea.append("스트림 설정 에러!!\n");
+			System.out.println("stream setting error");
+		}
+		
+		send_Message(id); // 정상적으로 연결되면 나의 id를 전송
+
+		/*Thread th = new Thread(new Runnable() { // 스레드를 돌려서 서버로부터 메세지를 수신
+
+					@Override
+					public void run() {
+						while (true) {
+
+							try {
+								String msg = dis.readUTF(); // 메세지를 수신한다
+								//textArea.append(msg + "\n");
+							} catch (IOException e) {
+								//textArea.append("메세지 수신 에러!!\n");
+								// 서버와 소켓 통신에 문제가 생겼을 경우 소켓을 닫는다
+								try {
+									os.close();
+									is.close();
+									dos.close();
+									dis.close();
+									socket.close();
+									break; // 에러 발생하면 while문 종료
+								} catch (IOException e1) {
+
+								}
+
+							}
+						} // while문 끝
+
+					}// run메소드 끝
+				});
+
+		th.start();*/
+
+	}
+	
+	public void send_Message(String str) { // 서버로 메세지를 보내는 메소드
+		try {
+			dos.writeUTF(str);
+		} catch (IOException e) {
+			//textArea.append("메세지 송신 에러!!\n");
+		}
+	}
+
+
 
 	public void placeMainPanel(JPanel panel_main, String ID){
 		Font font_title = new Font("궁서체", Font.CENTER_BASELINE, 60);
@@ -49,7 +145,7 @@ public class MainView extends JFrame{
 		panel_main.setLayout(null);
 		JLabel userLabel = new JLabel(ID+" 님 환영합니다.");
 		userLabel.setFont(font);
-		userLabel.setBounds(20, 30, 500, 40);
+		userLabel.setBounds(20, 30, 1000, 40);
 		panel_main.add(userLabel);
 
 		JButton QuestionButton = new JButton("질문하기");

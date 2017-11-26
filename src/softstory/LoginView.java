@@ -92,7 +92,7 @@ public class LoginView extends JFrame{
 		passText.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				isLoginCheck();			
+				isLoginCheck();		
 			}
 		});
 		
@@ -221,7 +221,7 @@ public class LoginView extends JFrame{
 			bLoginCheck = true;
 			
 			if(isLogin()){
-				main.showMainView(userText.getText());
+				main.showMainView(userText.getText(), "127.0.0.1", 9001);
 			}	
 			
 		}else{
