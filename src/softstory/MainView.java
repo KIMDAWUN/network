@@ -1,5 +1,6 @@
 package softstory;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.TextArea;
@@ -10,24 +11,31 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import com.mysql.jdbc.Statement;
 
 import java.io.*;
 import java.net.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 
 public class MainView extends JFrame{
 	 private MainProcess main;
-	 private ImageIcon img;
+	 private ImageIcon img,img2;
 	 
 	 private String id;
 	 private String ip;
 	 private int port;
 	 
-	 private Socket socket; // ¿¬°á¼ÒÄÏ
+	 private Socket socket; // ì—°ê²°ì†Œì¼“
 	 private InputStream is;
 	 private OutputStream os;
 	 private DataInputStream dis;
 	 private DataOutputStream dos;
+	 
 	 
 	MainView(String ID, String ip, int port) {
 		
@@ -36,22 +44,21 @@ public class MainView extends JFrame{
 		this.port = port;
 		
 		img = new ImageIcon("images//background.png");
-		
+	
 		setTitle("Soft Story!");
 		setSize(1300, 700);
 		setLocation(200, 70);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+		
 		// panel
 		JPanel panel_main =  new JPanel(){
 			public void paintComponent(Graphics g){
-				
 				g.drawImage(img.getImage(),0,0,null);
 				setOpaque(false);
 				super.paintComponent(g);
 			}
 		};
-		
+
 		placeMainPanel(panel_main,ID);
 
 		// add
@@ -68,8 +75,8 @@ public class MainView extends JFrame{
 	public void network(){
 		try {
 			socket = new Socket(ip, port);
-			if (socket != null){ //¿¬°áµÇ¾úÀ»¶§
-				Connection(); // ¿¬°á ¸Ş¼Òµå È£Ãâ
+			if (socket != null){ //ì—°ê²°ë˜ì—ˆì„ë•Œ
+				Connection(); // ì—°ê²° ë©”ì†Œë“œ í˜¸ì¶œ
 			}
 		} catch (UnknownHostException e) {
 
@@ -81,7 +88,7 @@ public class MainView extends JFrame{
 	
 	public void Connection() {
 
-		try { // ½ºÆ®¸² ¼³Á¤
+		try { // ìŠ¤íŠ¸ë¦¼ ì„¤ì •
 			is = socket.getInputStream();
 			dis = new DataInputStream(is);
 
@@ -89,66 +96,60 @@ public class MainView extends JFrame{
 			dos = new DataOutputStream(os);
 
 		} catch (IOException e) {
-			//textArea.append("½ºÆ®¸² ¼³Á¤ ¿¡·¯!!\n");
+			//textArea.append("ìŠ¤íŠ¸ë¦¼ ì„¤ì • ì—ëŸ¬!!\n");
 			System.out.println("stream setting error");
 		}
 		
-		send_Message(id); // Á¤»óÀûÀ¸·Î ¿¬°áµÇ¸é ³ªÀÇ id¸¦ Àü¼Û
+		send_Message(id); // ì •ìƒì ìœ¼ë¡œ ì—°ê²°ë˜ë©´ ë‚˜ì˜ idë¥¼ ì „ì†¡
 
-		/*Thread th = new Thread(new Runnable() { // ½º·¹µå¸¦ µ¹·Á¼­ ¼­¹ö·ÎºÎÅÍ ¸Ş¼¼Áö¸¦ ¼ö½Å
-
+		/*Thread th = new Thread(new Runnable() { // ìŠ¤ë ˆë“œë¥¼ ëŒë ¤ì„œ ì„œë²„ë¡œë¶€í„° ë©”ì„¸ì§€ë¥¼ ìˆ˜ì‹ 
 					@Override
 					public void run() {
 						while (true) {
-
 							try {
-								String msg = dis.readUTF(); // ¸Ş¼¼Áö¸¦ ¼ö½ÅÇÑ´Ù
+								String msg = dis.readUTF(); // ë©”ì„¸ì§€ë¥¼ ìˆ˜ì‹ í•œë‹¤
 								//textArea.append(msg + "\n");
 							} catch (IOException e) {
-								//textArea.append("¸Ş¼¼Áö ¼ö½Å ¿¡·¯!!\n");
-								// ¼­¹ö¿Í ¼ÒÄÏ Åë½Å¿¡ ¹®Á¦°¡ »ı°åÀ» °æ¿ì ¼ÒÄÏÀ» ´İ´Â´Ù
+								//textArea.append("ë©”ì„¸ì§€ ìˆ˜ì‹  ì—ëŸ¬!!\n");
+								// ì„œë²„ì™€ ì†Œì¼“ í†µì‹ ì— ë¬¸ì œê°€ ìƒê²¼ì„ ê²½ìš° ì†Œì¼“ì„ ë‹«ëŠ”ë‹¤
 								try {
 									os.close();
 									is.close();
 									dos.close();
 									dis.close();
 									socket.close();
-									break; // ¿¡·¯ ¹ß»ıÇÏ¸é while¹® Á¾·á
+									break; // ì—ëŸ¬ ë°œìƒí•˜ë©´ whileë¬¸ ì¢…ë£Œ
 								} catch (IOException e1) {
-
 								}
-
 							}
-						} // while¹® ³¡
-
-					}// run¸Ş¼Òµå ³¡
+						} // whileë¬¸ ë
+					}// runë©”ì†Œë“œ ë
 				});
-
 		th.start();*/
 
 	}
 	
-	public void send_Message(String str) { // ¼­¹ö·Î ¸Ş¼¼Áö¸¦ º¸³»´Â ¸Ş¼Òµå
+	public void send_Message(String str) { // ì„œë²„ë¡œ ë©”ì„¸ì§€ë¥¼ ë³´ë‚´ëŠ” ë©”ì†Œë“œ
 		try {
 			dos.writeUTF(str);
 		} catch (IOException e) {
-			//textArea.append("¸Ş¼¼Áö ¼Û½Å ¿¡·¯!!\n");
+			//textArea.append("ë©”ì„¸ì§€ ì†¡ì‹  ì—ëŸ¬!!\n");
 		}
 	}
 
 
 
 	public void placeMainPanel(JPanel panel_main, String ID){
-		Font font_title = new Font("±Ã¼­Ã¼", Font.CENTER_BASELINE, 60);
-	      Font font = new Font("±Ã¼­Ã¼", Font.CENTER_BASELINE, 40);
+		Font font_title = new Font("ê¶ì„œì²´", Font.CENTER_BASELINE, 60);
+	      Font font = new Font("ê¶ì„œì²´", Font.CENTER_BASELINE, 40);
 
 		panel_main.setLayout(null);
-		JLabel userLabel = new JLabel(ID+" ´Ô È¯¿µÇÕ´Ï´Ù.");
+		JLabel userLabel = new JLabel(ID+" ë‹˜ í™˜ì˜í•©ë‹ˆë‹¤.");
 		userLabel.setFont(font);
 		userLabel.setBounds(20, 30, 1000, 40);
 		panel_main.add(userLabel);
 
-		JButton QuestionButton = new JButton("Áú¹®ÇÏ±â");
+		JButton QuestionButton = new JButton("ì§ˆë¬¸í•˜ê¸°");
 		QuestionButton.setFont(font);
 		QuestionButton.setBounds(20,130,400,80);
 		panel_main.add(QuestionButton);
@@ -156,11 +157,17 @@ public class MainView extends JFrame{
 		QuestionButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				main.showQuestion();
+				try{main.showQuestion();
 			}
-		});
+				catch(Exception i)
+				{
+					System.out.println("ì˜¤ë¥˜");
+				}
+			}
+			});
+	
 
-		JButton ScheduleButton = new JButton("½ºÄÉÁÙ");
+		JButton ScheduleButton = new JButton("ìŠ¤ì¼€ì¤„");
 		ScheduleButton.setFont(font);
 		ScheduleButton.setBounds(20,230,400,80);
 		panel_main.add(ScheduleButton);
@@ -172,7 +179,7 @@ public class MainView extends JFrame{
 			}
 		});
 
-		JButton MessengerButton = new JButton("¸Ş½ÅÀú");
+		JButton MessengerButton = new JButton("ë©”ì‹ ì €");
 		MessengerButton.setFont(font);
 		MessengerButton.setBounds(20,330,400,80);
 		panel_main.add(MessengerButton);
@@ -184,7 +191,7 @@ public class MainView extends JFrame{
 			}
 		});
 
-		JButton SettingButton = new JButton("¼³Á¤");
+		JButton SettingButton = new JButton("ì„¤ì •");
 		SettingButton.setFont(font);
 		SettingButton.setBounds(20,430,400,80);
 		panel_main.add(SettingButton);
@@ -195,6 +202,43 @@ public class MainView extends JFrame{
 				main.showSetting();
 			}
 		});
+		
+		JButton Egg= new JButton(new ImageIcon("images//egg.png"));
+		Egg.setBounds(450,150,350,350);
+		Egg.setBackground(Color.yellow);
+		Egg.setBorderPainted(false);
+		Egg.setFocusPainted(false);
+		Egg.setContentAreaFilled(false);
+		panel_main.add(Egg);
+		Egg.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int eggs=getegg();
+				JOptionPane.showMessageDialog(null,"My egg is "+eggs+" .");
+			}
+		});
+	}
+	public int getegg()
+	{
+		int egg=0;
+		Connection con = null;
+		   Statement stmt = null; //ë°ì´í„°ë¥¼ ì „ì†¡í•˜ëŠ” ê°ì²´
+		   ResultSet rs = null; //ë°ì´í„° ì£¼ì†Œê°’ ì´ìš©
+		   try {
+			   String sql = "select egg from member where id='" + id + "'";
+		   
+			   Class.forName("com.mysql.jdbc.Driver");
+			   con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/softstory", "root", "root");
+			   stmt = (Statement) con.createStatement();
+			   rs = stmt.executeQuery(sql);
+			   int num = 0;
+			   while(rs.next()){
+				   egg = rs.getInt(1);  
+				}
+			   return egg;
+		   }catch(Exception e){
+			   return 0;
+		   }
 	}
 	
 	public void setMain(MainProcess main) {
