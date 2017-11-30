@@ -9,6 +9,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -44,8 +46,8 @@ public class SettingView extends JFrame{
 	
 	SettingView(){
 		setTitle("Setting");
-		setSize(700, 500);
-		setLocation(200, 70);
+		setSize(500, 400);
+		setLocation(500, 70);
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
@@ -189,7 +191,7 @@ public class SettingView extends JFrame{
 				      f.getContentPane().add(panel_join);
 				        f.pack();
 				  f.setVisible(true);
-				 }
+			}
 				}
 		);
 
@@ -201,14 +203,6 @@ public class SettingView extends JFrame{
 				JOptionPane.showMessageDialog(null, "알림메세지입니다.","알림메세지",JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-		
-		JButton btnMyEggs = new JButton("My eggs");
-		btnMyEggs.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-	
-			}
-		});
-		menuBar.add(btnMyEggs);
 		menuBar.add(mnPush);
 		
 		JMenuItem mntmYes = new JMenuItem("yes");
@@ -235,7 +229,7 @@ public class SettingView extends JFrame{
 		panel_Setting.setLayout(null);
 		
 		btnReturn = new JButton(new ImageIcon("images//back.png"));
-		btnReturn.setBounds(600,400, 50, 50);
+		btnReturn.setBounds(300,200, 50, 50);
 		btnReturn.setBackground(Color.white);
 		btnReturn.setBorderPainted(false);
 		btnReturn.setFocusPainted(false);
