@@ -14,6 +14,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+/*
+ * joiningView is used to first time sign up window
+ * when press the SUBMIT button, user's input is entered into the DB
+ * through the DAO class
+ */
 public class JoiningView extends JFrame{
 	private MainProcess main;
 	
@@ -28,11 +33,8 @@ public class JoiningView extends JFrame{
 	
 	JoiningView(){
 		setTitle("Be member of SoftStory!");
-		//setSize(1000, 650);
 		setSize(1050, 650);
-		//setSize(410, 1000);
 		setLocation(240, 100);
-		//setLocation(400,0);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setBackground(Color.cyan);
 		
@@ -101,7 +103,7 @@ public class JoiningView extends JFrame{
 	      YEARLabel.setBounds(10,300,80,25);
 	      panel_join.add(YEARLabel);
 	      
-	      Choice list;//학년
+	      Choice list;
 	      list = new Choice();
 	      list.add("1학년");
 	      list.add("2학년");
@@ -126,7 +128,7 @@ public class JoiningView extends JFrame{
 	      languageList[5] = new JCheckBox("PHP");
 	      languageList[6] = new JCheckBox("CSS");
 	      languageList[7] = new JCheckBox("HTML");
-	      languageList[8] = new JCheckBox("Others..");//기타 언어 처리 어떻게 할 것인가
+	      languageList[8] = new JCheckBox("Others..");
 	      
 	      int yAxis = 380;
 	      for(int i = 0; i < 9; i++){
@@ -146,7 +148,6 @@ public class JoiningView extends JFrame{
 	      
 	      JLabel TakeLabel = new JLabel("Taken/Taking Course: ");
 	      TakeLabel.setFont(font1);
-	      //TakeLabel.setBounds(10,465,250,50);
 	      TakeLabel.setBounds(450,100,250,25);
 	      panel_join.add(TakeLabel);
 	      
@@ -197,10 +198,9 @@ public class JoiningView extends JFrame{
 	    	  
 	      }
 	      
-		//입력 정보 전송
+		//transger input data
 		Submit = new JButton("Submit");
 		Submit.setBounds(500, 500, 150, 30);
-		//Submit.setBounds(30, 900, 150, 30);
 		panel_join.add(Submit);
 		Submit.addActionListener(new ActionListener() {
 			@Override
@@ -209,7 +209,6 @@ public class JoiningView extends JFrame{
 	        	 for(int i = 0; i < 9; i++){
 	    			if(languageList[i].isSelected()){
 	    				language += languageList[i].getText() + " "; 
-	    				//dto.setLanguage(languageList[i].getText());
 	    			}
 	    		 }
 	        	 
@@ -217,10 +216,9 @@ public class JoiningView extends JFrame{
 	        	 for(int i = 0; i < 23; i++){
 	     			if(courseList[i].isSelected()){
 	     				course += courseList[i].getText() + " "; 
-	     				//dto.setLanguage(languageList[i].getText());
 	     			}
 	     		 }
-	        	 //입력된 정보를 가져와 dto에 저장
+	        	 //save input data into dto
 	       		 dto.setId(IDText.getText());
 	       		 dto.setPassword(PWText.getText());
 	       		 dto.setName(NAMEText.getText());
@@ -234,14 +232,13 @@ public class JoiningView extends JFrame{
 	       	  }catch(Exception e1){
 	       		  e1.printStackTrace();
 	       	  }
-
+	       	  dispose();
 			}
 		});
 				
-		//입력 정보 초기화
+		//initialize input value
 		Cancel = new JButton("Cancel");
 		Cancel.setBounds(700, 500, 150, 30);
-	    //Cancel.setBounds(210, 900, 150, 30);
 		panel_join.add(Cancel);
 		Cancel.addActionListener(new ActionListener() {
 			@Override

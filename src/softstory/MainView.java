@@ -20,228 +20,288 @@ import java.io.*;
 import java.net.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class MainView extends JFrame{
-	 private MainProcess main;
-	 private ImageIcon img,img2;
-	 
-	 private String id;
-	 private String ip;
-	 private int port;
-	 
-	 private Socket socket; // 연결소켓
-	 private InputStream is;
-	 private OutputStream os;
-	 private DataInputStream dis;
-	 private DataOutputStream dos;
-	 
-	 
-	MainView(String ID, String ip, int port) {
-		
-		this.id = ID;
-		this.ip = ip;
-		this.port = port;
-		
-		img = new ImageIcon("images//background.png");
-	
-		setTitle("Soft Story!");
-		setSize(1300, 700);
-		setLocation(200, 70);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
-		// panel
-		JPanel panel_main =  new JPanel(){
-			public void paintComponent(Graphics g){
-				g.drawImage(img.getImage(),0,0,null);
-				setOpaque(false);
-				super.paintComponent(g);
-			}
-		};
+public class MainView extends JFrame {
+   private MainProcess main;
+   private ImageIcon img, img2;
+   static int eggs;
+   static String id;
 
-		placeMainPanel(panel_main,ID);
+   Connection con = null;
+   Statement stmt = null;
+   ResultSet rs = null;
+   PreparedStatement pstmt = null;
 
-		// add
-		add(panel_main);
+   /**
+   * Make main frame
+   * and call placeMainPanel to make button for menu 
+   */
+   MainView(String ID) {
 
-		// visible
-		setVisible(true);
-		
-		//network
-		network();
+      this.id = ID;
 
-	}
-	
-	public void network(){
-		try {
-			socket = new Socket(ip, port);
-			if (socket != null){ //연결되었을때
-				Connection(); // 연결 메소드 호출
-			}
-		} catch (UnknownHostException e) {
+      img = new ImageIcon("images//background.png");
 
-		} catch (IOException e) {
-			System.out.println("socket connection error");
-		}
+      setTitle("Soft Story!");
+      setSize(1300, 700);
+      setLocation(200, 70);
+      setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-	}
-	
-	public void Connection() {
+      // panel
+      JPanel panel_main = new JPanel() {
+         public void paintComponent(Graphics g) {
+            g.drawImage(img.getImage(), 0, 0, null);
+            setOpaque(false);
+            super.paintComponent(g);
+         }
+      };
 
-		try { // 스트림 설정
-			is = socket.getInputStream();
-			dis = new DataInputStream(is);
+      placeMainPanel(panel_main, ID);
 
-			os = socket.getOutputStream();
-			dos = new DataOutputStream(os);
+      // add
+      add(panel_main);
 
-		} catch (IOException e) {
-			//textArea.append("스트림 설정 에러!!\n");
-			System.out.println("stream setting error");
-		}
-		
-		send_Message(id); // 정상적으로 연결되면 나의 id를 전송
+      // visible
+      setVisible(true);
 
-		/*Thread th = new Thread(new Runnable() { // 스레드를 돌려서 서버로부터 메세지를 수신
-					@Override
-					public void run() {
-						while (true) {
-							try {
-								String msg = dis.readUTF(); // 메세지를 수신한다
-								//textArea.append(msg + "\n");
-							} catch (IOException e) {
-								//textArea.append("메세지 수신 에러!!\n");
-								// 서버와 소켓 통신에 문제가 생겼을 경우 소켓을 닫는다
-								try {
-									os.close();
-									is.close();
-									dos.close();
-									dis.close();
-									socket.close();
-									break; // 에러 발생하면 while문 종료
-								} catch (IOException e1) {
-								}
-							}
-						} // while문 끝
-					}// run메소드 끝
-				});
-		th.start();*/
+   }
 
-	}
-	
-	public void send_Message(String str) { // 서버로 메세지를 보내는 메소드
-		try {
-			dos.writeUTF(str);
-		} catch (IOException e) {
-			//textArea.append("메세지 송신 에러!!\n");
-		}
-	}
+   /**
+   *Add buttons for menu and make icon.
+   *Input: panel_main (add buttons and icon on this panel)
+   *ID (user id)
+   */
+   public void placeMainPanel(JPanel panel_main, String ID) {
+      Font font_title = new Font("����ǹ��� �־�", Font.CENTER_BASELINE, 60);
+      Font font = new Font("����ǹ��� �־�", Font.CENTER_BASELINE, 40);
+      Color color = new Color(255, 255, 229);
+
+      panel_main.setLayout(null);
+      JLabel userLabel = new JLabel(ID + " �� ȯ���մϴ�.");
+      userLabel.setFont(font);
+      userLabel.setBounds(20, 30, 1000, 40);
+      panel_main.add(userLabel);
+
+      JButton QuestionButton = new JButton(new ImageIcon("images//QuestionButton.png"));
+      QuestionButton.setFont(font);
+      QuestionButton.setBackground(color);
+      QuestionButton.setBorderPainted(false);
+      QuestionButton.setBounds(30, 100, 470, 110);
+      panel_main.add(QuestionButton);
+
+      /**
+      * Load Question view.
+      * If user has 0 egg, then user can't ask a question.
+      */
+      QuestionButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            if (eggs == 0)
+               JOptionPane.showMessageDialog(null, "Egg�� �����մϴ�.", "ERROR_MESSAGE", JOptionPane.ERROR_MESSAGE);
+            else {
+               try {
+                  main.showQuestion();
+               } catch (Exception i) {
+                  System.out.println("����");
+               }
+            }
+         }
+      });
+
+      JButton ScheduleButton = new JButton(new ImageIcon("images//ScheduleButton.png"));
+      ScheduleButton.setFont(font);
+      ScheduleButton.setBackground(color);
+      ScheduleButton.setBorderPainted(false);
+      ScheduleButton.setBounds(30, 240, 460, 110);
+      panel_main.add(ScheduleButton);
+
+    //Load Schedule view
+      ScheduleButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            main.showSchedule(ID);
+         }
+      });
+
+      JButton MessengerButton = new JButton(new ImageIcon("images//MessengerButton.png"));
+      MessengerButton.setFont(font);
+      MessengerButton.setBackground(color);
+      MessengerButton.setBorderPainted(false);
+      MessengerButton.setBounds(30, 380, 480, 110);
+      panel_main.add(MessengerButton);
+
+    //Load Messenger view 
+      MessengerButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            main.showMessenger();
+         }
+      });
+
+    
+      JButton SettingButton = new JButton(new ImageIcon("images//SettingButton.png"));
+      SettingButton.setFont(font);
+      SettingButton.setBackground(color);
+      SettingButton.setBorderPainted(false);
+      SettingButton.setBounds(30, 520, 480, 110);
+      panel_main.add(SettingButton);
+    //Load Setting view 
+      SettingButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            main.showSetting();
+         }
+      });
+      eggs = getegg();
+      JButton Egg = new JButton(new ImageIcon("images//egg.png"));
+      Egg.setBounds(1000, 475, 180, 180);
+      Egg.setBackground(Color.yellow);
+      Egg.setBorderPainted(false);
+      Egg.setFocusPainted(false);
+      Egg.setContentAreaFilled(false);
+      panel_main.add(Egg);
+      /**
+      * Show the number of egg which user has.
+      * If number of eggs is over 150, then get user's phone number  to send gift.
+      */
+      Egg.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            JOptionPane.showMessageDialog(null, "My egg is " + eggs + " .");
+            if (eggs >= 150) {
+               String resultStr = null;
+               String name;
+               name = getID();
+               resultStr = JOptionPane.showInputDialog("������ �ڵ��� ��ȣ�� �Է����ֽÿ�.");
+               chicken send = new chicken(name, resultStr);
+               send.insert();
+            }
+         }
+      });
+
+      /**
+      *Load character according number of egg.
+      *If number of eggs is between 0 and 40 -> egg character
+      *If number of eggs is between 40 and 90 -> chick character
+      *If number of eggs is between 90 and 150 -> bigger chick character
+      *If number of eggs is over 150 ->chicken character
+      */
+      String egg_character = null;
+      if (eggs >= 0 && eggs < 40)
+         egg_character = "images//anigif1.gif";
+      else if (eggs >= 40 && eggs < 90)
+         egg_character = "images//anigif2.gif";
+      else if (eggs >= 90 && eggs < 150)
+         egg_character = "images//anigif3.gif";
+      else if (eggs >= 150) {
+         egg_character = "images//anigif4.gif";
+      }
+
+    //Load character according user's number of eggs.
+      JButton animation = new JButton(new ImageIcon(egg_character));
+
+      animation.setBounds(530, 50, 600, 580);
+      animation.setBackground(Color.yellow);
+      animation.setBorderPainted(false);
+      animation.setFocusPainted(false);
+      animation.setContentAreaFilled(false);
+      panel_main.add(animation);
 
 
+      /**
+       *If user log out then have to chane login state in DB
+       *Change the login value as 'false'.
+       */
+      JButton logOut = new JButton(new ImageIcon("images//logout.png"));
+      logOut.setBounds(1150, 520, 130, 130);
+      logOut.setBackground(color);
+      logOut.setBorderPainted(false);
+      logOut.setFocusPainted(false);
+      logOut.setContentAreaFilled(false);
+      panel_main.add(logOut);
+      logOut.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
 
-	public void placeMainPanel(JPanel panel_main, String ID){
-		Font font_title = new Font("궁서체", Font.CENTER_BASELINE, 60);
-	      Font font = new Font("궁서체", Font.CENTER_BASELINE, 40);
+            String sql_for_login = "UPDATE member SET login=?" + "where id=?";
 
-		panel_main.setLayout(null);
-		JLabel userLabel = new JLabel(ID+" 님 환영합니다.");
-		userLabel.setFont(font);
-		userLabel.setBounds(20, 30, 1000, 40);
-		panel_main.add(userLabel);
+            try {
+               pstmt = con.prepareStatement(sql_for_login);
+               pstmt.setString(1, "false");
+               pstmt.setString(2, id);
 
-		JButton QuestionButton = new JButton("질문하기");
-		QuestionButton.setFont(font);
-		QuestionButton.setBounds(20,130,400,80);
-		panel_main.add(QuestionButton);
+               int cnt = pstmt.executeUpdate();
+               // dispose();
+               main.exitMain();
+            } catch (SQLException e1) {
+               // TODO Auto-generated catch block
+               e1.printStackTrace();
+            }
 
-		QuestionButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try{main.showQuestion();
-			}
-				catch(Exception i)
-				{
-					System.out.println("오류");
-				}
-			}
-			});
-	
+         }
+      });
 
-		JButton ScheduleButton = new JButton("스케줄");
-		ScheduleButton.setFont(font);
-		ScheduleButton.setBounds(20,230,400,80);
-		panel_main.add(ScheduleButton);
+   }
 
-		ScheduleButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				main.showSchedule();
-			}
-		});
+   /**
+   * Get number of egg on 'member' table.
+   * Find the value on DB
+   */
+   public int getegg() {
+      int egg = 0;
 
-		JButton MessengerButton = new JButton("메신저");
-		MessengerButton.setFont(font);
-		MessengerButton.setBounds(20,330,400,80);
-		panel_main.add(MessengerButton);
+      try {
 
-		MessengerButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				main.showMessenger();
-			}
-		});
+         String sql = "select egg from member where id='" + id + "'";
 
-		JButton SettingButton = new JButton("설정");
-		SettingButton.setFont(font);
-		SettingButton.setBounds(20,430,400,80);
-		panel_main.add(SettingButton);
+         Class.forName("com.mysql.jdbc.Driver");
+         con = DriverManager.getConnection("jdbc:mysql://"+MainProcess.serverAddress+":3306/softstory", "root", "12345");
+         stmt = (Statement) con.createStatement();
+         rs = stmt.executeQuery(sql);
+         int num = 0;
+         while (rs.next()) {
+            egg = rs.getInt(1);
+         }
+         return egg;
+      } catch (Exception e) {
+         return 0;
+      }
+   }
 
-		SettingButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				main.showSetting();
-			}
-		});
-		
-		JButton Egg= new JButton(new ImageIcon("images//egg.png"));
-		Egg.setBounds(450,150,350,350);
-		Egg.setBackground(Color.yellow);
-		Egg.setBorderPainted(false);
-		Egg.setFocusPainted(false);
-		Egg.setContentAreaFilled(false);
-		panel_main.add(Egg);
-		Egg.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int eggs=getegg();
-				JOptionPane.showMessageDialog(null,"My egg is "+eggs+" .");
-			}
-		});
-	}
-	public int getegg()
-	{
-		int egg=0;
-		Connection con = null;
-		   Statement stmt = null; //데이터를 전송하는 객체
-		   ResultSet rs = null; //데이터 주소값 이용
-		   try {
-			   String sql = "select egg from member where id='" + id + "'";
-		   
-			   Class.forName("com.mysql.jdbc.Driver");
-			   con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/softstory", "root", "root");
-			   stmt = (Statement) con.createStatement();
-			   rs = stmt.executeQuery(sql);
-			   int num = 0;
-			   while(rs.next()){
-				   egg = rs.getInt(1);  
-				}
-			   return egg;
-		   }catch(Exception e){
-			   return 0;
-		   }
-	}
-	
-	public void setMain(MainProcess main) {
-		this.main = main;
-	}
+   /**
+   * Get user name of ID from DB
+   */
+   public String getName() {
+      String userName = "";
+
+      try {
+         String sql = "select name from member where id='" + id + "'";
+         Class.forName("com.mysql.jdbc.Driver");
+         con = DriverManager.getConnection("jdbc:mysql://"+MainProcess.serverAddress+":3306/softstory", "root", "12345");
+         stmt = (Statement) con.createStatement();
+         rs = stmt.executeQuery(sql);
+         while (rs.next()) {
+            userName = rs.getString(1);
+            System.out.println(userName);
+         }
+         return userName;
+         // return new String(userName.getBytes(), "ISO-8859-1");
+      } catch (Exception e) {
+         return null;
+      }
+   }
+
+   /**
+   * return ID of user
+   */
+   public static String getID() {
+      return id;
+   }
+
+   public void setMain(MainProcess main) {
+      this.main = main;
+   }
 }

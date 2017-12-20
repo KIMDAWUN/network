@@ -1,5 +1,9 @@
 package softstory;
 
+/*
+ * DTO is used to manage all users who joined SoftStory 
+ * get and setter function for id,password,name,studentNo,year,egg,language,course,push
+ */
 public class DTO {
 
 	String id;
@@ -10,6 +14,7 @@ public class DTO {
 	int egg = 0;
 	String language;
 	String course;
+	int push;
 	
 	public String getId() {
 		return id;
@@ -59,5 +64,13 @@ public class DTO {
 	public void setCourse(String course) {
 		this.course = course;
 	}
+	public void setPush(int push) {
+		this.push=push;
+	}
+	public int getpush() {
+		return push;
+	}
+	
 	
 }
+

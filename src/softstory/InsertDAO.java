@@ -5,16 +5,19 @@ import java.sql.DriverManager;
 
 import com.mysql.jdbc.Statement;
 
+/*
+ * InsertDAO is used to when users join to SoftStroy
+ * connect DB
+ * update DB id password name studentNo year egg language course
+ * first joining, egg is 20
+ */
+
 public class InsertDAO {
-	public static void main(String[] args) {
- 
- 
-	}
 	public static boolean create(DTO dto) throws Exception {
 
 		boolean flag = false;
 		Connection con = null;
-		Statement stmt = null;// 데이터를 전송하는 객체
+		Statement stmt = null; //data transfer object
 		String id = dto.getId();
 		String passwd = dto.getPassword();
 		String name = dto.getName();
@@ -38,7 +41,7 @@ public class InsertDAO {
 					+ "20')"; //처음 가입시 주는 egg개수
 			
 			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/softstory", "root", "12345");
+			con = DriverManager.getConnection("jdbc:mysql://"+MainProcess.serverAddress+":3306/softstory", "root", "12345");
 			stmt = (Statement) con.createStatement();
 			stmt.executeUpdate(member_sql);
 			
@@ -70,4 +73,37 @@ public class InsertDAO {
 		}
 		return flag;
 	}
+	/*
+	 * createPush is used to when user updates push alarm on off
+	 * change the DB push attribute in member
+	 */
+	public static boolean createPush(DTO dto) throws Exception {
+		boolean f=false;
+		Connection con = null;
+		Statement stmt = null; //data transfer object
+		
+		int push=dto.getpush();
+		String id=dto.getId();
+		String sql="update member set push="+push+" where id='"+id+"'";
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://"+MainProcess.serverAddress+":3306/softstory", "root", "12345");
+			stmt = (Statement) con.createStatement();
+			stmt.executeUpdate(sql);
+		}catch (Exception e) {
+			System.out.println(e);
+			f = false;
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (con != null)
+					con.close();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return f;
+	}
+
 }

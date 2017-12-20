@@ -1,5 +1,7 @@
 package softstory;
-
+/*
+ * StatisDTO is used to when surveyed the satisfaction, give some stars 
+ */
 public class SatisDTO {
 	String id;
 	public String getId() {

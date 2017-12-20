@@ -7,24 +7,53 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/*
+ * QuestionView class is used to send Question
+ */
 public class QuestionView extends JFrame{
    
+   
    private MainProcess main;
+
+   Font font = new Font("배달의민족 주아", Font.CENTER_BASELINE, 40);
+   Font font1 = new Font("배달의민족 주아", Font.CENTER_BASELINE, 20);
+   Font font2 = new Font("배달의민족 주아", Font.CENTER_BASELINE, 13);
+   String[] msg=new String[20];
    
    private ImageIcon img;
-   private JButton btnReturn;
+   private JButton btnReturn,btnOk;
+   static String lan,cour,title;
+   
+   static boolean asking = false; //asking:true, answered person: false
+
+   /*
+    * JFrame for Question window
+    */
    
    QuestionView(){
-      img = new ImageIcon("images//background.png");
+      img = new ImageIcon("images//Question_background.png");
       
       setTitle("Ask your questions!");
       setSize(1300, 700);
@@ -40,6 +69,7 @@ public class QuestionView extends JFrame{
          }
       };
       
+      
       placeQuestionPanel(panel_Question);
 
       // add
@@ -47,8 +77,12 @@ public class QuestionView extends JFrame{
 
       // visiible
       setVisible(true);
+ 
    }
    
+   /*
+    * make panel for Question window frame
+    */
    public void placeQuestionPanel(JPanel panel_Question) {
       Font font1 = new Font("배달의민족 주아", Font.CENTER_BASELINE, 30);
       
@@ -56,59 +90,48 @@ public class QuestionView extends JFrame{
       
       JLabel LanguageLabel = new JLabel("Language: ");
       LanguageLabel.setFont(font1);
-       LanguageLabel.setBounds(10,200,200,40);
+       LanguageLabel.setBounds(10,200,230,40);
        panel_Question.add(LanguageLabel);
         
-       Choice list;//언어
-       list = new Choice();
-       list.add("C");
-       list.add("C++");
-       list.add("Java");
-       list.add("JavaScript");
-       list.add("Python");
-       list.add("PHP");
-       list.add("CSS");
-       list.add("HTML");
-       list.add("Others..");//기타 언어 처리 어떻게 할 것인가
+       String data[]={"C","C++","Java","JacaScript","Python","HTML","Others.."};
+       JComboBox<String> combo;
+       combo=new JComboBox<String>(data);       
+       combo.setFont(font2);
+       combo.setBounds(230,200,180,40);
+       panel_Question.add(combo);
+
+
          
-       list.setBounds(230,200,140,40);
-       panel_Question.add(list);
-        
-       JLabel CourseLabel = new JLabel("Course: ");
-       CourseLabel.setFont(font1);
-       CourseLabel.setBounds(10,300,200,40);
-       panel_Question.add(CourseLabel);
-        
-       Choice list2;//과목
-       list2 = new Choice();
-       list2.add("컴퓨터프로그래밍");
-        list2.add("웹프로그래밍");
-       list2.add("이산수학");
-       list2.add("소프트웨어구현패턴");
-       list2.add("로봇공학");
-       list2.add("확률통계");
-       list2.add("자료구조");
-       list2.add("객체지향프로그래밍");
-       list2.add("운영체제");
-       list2.add("컴퓨터네트워크");
-       list2.add("알고리즘");
-       list2.add("데이터베이스");
-       list2.add("모바일프로그래밍");
-       list2.add("소프트웨어산업세미나");
-       list2.add("소프트웨어공학");
-       list2.add("컴퓨터그래픽스");
-       list2.add("고급웹프로그래밍");
-       list2.add("분산시스템");
-       list2.add("컴퓨터구조");
-       list2.add("데이터마이닝");
-       list2.add("멀티미디어");
-       list2.add("소프트웨어신기술특론");
-       list2.add("컴퓨터보안");
-       list2.add("HCI");
-        
-       list2.setBounds(230,300,140,40);
-       panel_Question.add(list2);
-        
+       JLabel CourseLabel1 = new JLabel("Course: ");
+       CourseLabel1.setFont(font1);
+       CourseLabel1.setBounds(10,300,140,40);
+       panel_Question.add(CourseLabel1);
+       
+       String data2[]={"컴퓨터프로그래밍","웹프로그래밍","이산수학","소프트웨어구현패턴","로봇공학","확률통계","자료구조","객체지향프로그래밍","운영체제","컴퓨터네트워크","알고리즘","데이터베이스"
+               ,"모바일프로그래밍","소프트웨어산업세미나","소프트웨어공학","컴퓨터그래픽스","고급웹프로그래밍","분산시스템"
+               ,"컴퓨터구조","데이터마이닝","멀티미디어","소프트웨어신기술특론","컴퓨터보안","HCI"};
+          JComboBox<String> combo2;
+          combo2=new JComboBox<String>(data2);
+          combo2.setFont(font2);
+          combo2.setBounds(230,300,200,40);
+          panel_Question.add(combo2);
+         
+          /*
+           * outputs the value you selected
+           */
+          combo.addActionListener(new ActionListener(){
+              public void actionPerformed(ActionEvent e){
+                 lan=combo.getSelectedItem().toString();
+              }
+           });
+
+           combo2.addActionListener(new ActionListener(){
+              public void actionPerformed(ActionEvent e){
+                 cour=combo2.getSelectedItem().toString();
+              }
+           });
+
+         
        JLabel TitleLabel = new JLabel("Title: ");
        TitleLabel.setFont(font1);
        TitleLabel.setBounds(10,400,200,40);
@@ -131,9 +154,38 @@ public class QuestionView extends JFrame{
             main.exitQuestion();
          }
       });
+      
+      btnOk = new JButton(new ImageIcon("images//ok.png"));
+      btnOk.setBounds(340, 480, 160, 160);
+      btnOk.setBackground(Color.white);
+      btnOk.setBorderPainted(false);
+      btnOk.setFocusPainted(false);
+      btnOk.setContentAreaFilled(false);
+
+      /*
+       * action when you click OK button
+       * asking=true mean "I am the one who asked"
+       *send MainProcess acting as a client
+       *start with "QUSTION1"
+       */
+      panel_Question.add(btnOk);
+      btnOk.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            asking = true;
+             MainProcess.out.println("QUESTION1:"+MainView.id+":"+lan+":"+cour+":"+TitleText.getText());
+         }
+      });
+
    }
+public void gui(String l,String c,String t)
+{
+   JOptionPane.showMessageDialog(null,l+c+t);
+}
    
-   public void setMain(MainProcess main) {
+   public void setMain(MainProcess main) throws IOException {
       this.main = main;
+      
+ 
    }
 }

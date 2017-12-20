@@ -1,6 +1,5 @@
 package softstory;
 
-
 import java.awt.BorderLayout;
 import java.awt.Choice;
 import java.awt.Color;
@@ -36,216 +35,270 @@ import javax.swing.border.EmptyBorder;
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
 
+/*
+* SettingView class is used to modify clients's information
+* or set up push alarms on off
+*/
 public class SettingView extends JFrame{
-	private MainProcess main;
-	private JPanel contentPane;
-	private JButton btnReturn;
-	Font font = new Font("Î∞∞Îã¨ÏùòÎØºÏ°± Ï£ºÏïÑ", Font.CENTER_BASELINE, 40);
-	Font font1 = new Font("Î∞∞Îã¨ÏùòÎØºÏ°± Ï£ºÏïÑ", Font.CENTER_BASELINE, 20);
-	Font font2 = new Font("Î∞∞Îã¨ÏùòÎØºÏ°± Ï£ºÏïÑ", Font.CENTER_BASELINE, 13);
-	
-	SettingView(){
-		setTitle("Setting");
-		setSize(500, 400);
-		setLocation(500, 70);
-		JMenuBar menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
-		
-		JButton btnModification = new JButton("Modification");
-		btnModification.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFrame f=new JFrame("Modification");
-				  f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				  f.setBounds(100,100,100,100);
-				  Dimension dim= new Dimension(1100,600);
-				  f.setPreferredSize(dim);
-				  f.pack();
-				  JPanel panel_join= new JPanel();
-				  panel_join.setLayout(null);
+   private MainProcess main;
+   private JPanel contentPane;
+   private JButton btnReturn;
+   Font font = new Font("πË¥ﬁ¿«πŒ¡∑ ¡÷æ∆", Font.CENTER_BASELINE, 40);
+   Font font1 = new Font("πË¥ﬁ¿«πŒ¡∑ ¡÷æ∆", Font.CENTER_BASELINE, 20);
+   Font font2 = new Font("πË¥ﬁ¿«πŒ¡∑ ¡÷æ∆", Font.CENTER_BASELINE, 13);
+   
+   DTO dto = new DTO();
+   UserDTO udto = new UserDTO();
+   
+    /*
+	 * JFrame for settingView
+	 */
+   SettingView(){
+      setTitle("Setting");
+      setSize(300, 75);
+      setLocation(500, 70);
+      JMenuBar menuBar = new JMenuBar();
+      setJMenuBar(menuBar);
+      
+      JButton btnModification = new JButton("Modification");
+      btnModification.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            JFrame f=new JFrame("Modification");
+              f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+              f.setBounds(100,100,100,100);
+              Dimension dim= new Dimension(1100,600);
+              f.setPreferredSize(dim);
+              f.pack();
+              JPanel panel_join= new JPanel();
+              panel_join.setLayout(null);
 
-				  JLabel FirstLabel1 = new JLabel("Welcome to Soft Story!");
-					JLabel FirstLabel2 = new JLabel("Please type your real information!");
-					FirstLabel1.setFont(font);
-					FirstLabel2.setFont(font1);
-					FirstLabel1.setBounds(10,2,1000,50);
-				      panel_join.add(FirstLabel1);
-				      FirstLabel2.setBounds(10,55,1000,20);
-				      panel_join.add(FirstLabel2);
-				      
-				      JLabel NAMELabel = new JLabel("NAME: ");
-				      NAMELabel.setFont(font1);
-				      NAMELabel.setBounds(10, 100, 80, 25);
-				      panel_join.add(NAMELabel);
-				      
-				      JTextField NAMEText = new JTextField(20);
-				      NAMEText.setBounds(120, 100, 100, 25);
-				      panel_join.add(NAMEText);
-				      
-				      JLabel SNLabel = new JLabel("Student Number: ");
-				      SNLabel.setFont(font1);
-				      SNLabel.setBounds(10, 140, 200, 25);
-				      panel_join.add(SNLabel);
+              JLabel FirstLabel1 = new JLabel("Welcome to Soft Story!");
+               JLabel FirstLabel2 = new JLabel("Please type your real information!");
+               FirstLabel1.setFont(font);
+               FirstLabel2.setFont(font1);
+               FirstLabel1.setBounds(10,2,1000,50);
+                  panel_join.add(FirstLabel1);
+                  FirstLabel2.setBounds(10,55,1000,20);
+                  panel_join.add(FirstLabel2);
+                  
+                  JLabel NAMELabel = new JLabel("NAME: ");
+                  NAMELabel.setFont(font1);
+                  NAMELabel.setBounds(10, 100, 80, 25);
+                  panel_join.add(NAMELabel);
+                  
+                  JTextField NAMEText = new JTextField(20);
+                  NAMEText.setBounds(120, 100, 100, 25);
+                  panel_join.add(NAMEText);
+                  
+                  JLabel SNLabel = new JLabel("Student Number: ");
+                  SNLabel.setFont(font1);
+                  SNLabel.setBounds(10, 140, 200, 25);
+                  panel_join.add(SNLabel);
 
-				      JTextField SNText = new JTextField(20);
-				      SNText.setBounds(200, 140, 150, 25);
-				      panel_join.add(SNText);
-				      
-				      JLabel YEARLabel = new JLabel("Year: ");
-				      YEARLabel.setFont(font1);
-				      YEARLabel.setBounds(10,180,80,25);
-				      panel_join.add(YEARLabel);
-				      Choice list;//ÌïôÎÖÑ
-				      list = new Choice();
-				      list.add("1ÌïôÎÖÑ");
-				      list.add("2ÌïôÎÖÑ");
-				      list.add("3ÌïôÎÖÑ");
-				      list.add("4ÌïôÎÖÑ");
-				      list.add("ÎåÄÌïôÏõêÏÉù");
-				      list.add("Ï°∏ÏóÖÏÉù");
-				      list.setBounds(100,180,140,25);
-				      panel_join.add(list);
-				      JLabel LanguageLabel = new JLabel("Confident Language: ");
-				      LanguageLabel.setFont(font1);
-				      LanguageLabel.setBounds(10,240,250,25);
-				      panel_join.add(LanguageLabel);
-				      
-				      JCheckBox[] languageList = new JCheckBox[9];
-				      languageList[0] = new JCheckBox("C");
-				      languageList[1] = new JCheckBox("C++");
-				      languageList[2] = new JCheckBox("Java");
-				      languageList[3] = new JCheckBox("JavaScript");
-				      languageList[4] = new JCheckBox("Python");
-				      languageList[5] = new JCheckBox("PHP");
-				      languageList[6] = new JCheckBox("CSS");
-				      languageList[7] = new JCheckBox("HTML");
-				      languageList[8] = new JCheckBox("Others..");//Í∏∞ÌÉÄ Ïñ∏Ïñ¥ Ï≤òÎ¶¨ Ïñ¥ÎñªÍ≤å Ìï† Í≤ÉÏù∏Í∞Ä
-				      
-				      int yAxis = 280;
-				      for(int i = 0; i < 9; i++){
-				    	  if(i%2 == 0){
-				    		  languageList[i].setFont(font2);
-				    		  languageList[i].setBounds(10,yAxis,150,25);
-				        	  panel_join.add(languageList[i]);
-				    	  }
-				    	  else if(i%2 == 1){
-				    		  languageList[i].setFont(font2);
-				    		  languageList[i].setBounds(190,yAxis,150,25);
-				        	  panel_join.add(languageList[i]);
-				        	  yAxis += 40;
-				    	  }
-				    	  
-				      }
-				      
-				      JLabel TakeLabel = new JLabel("Taken/Taking Course: ");
-				      TakeLabel.setFont(font1);
-				      //TakeLabel.setBounds(10,465,250,50);
-				      TakeLabel.setBounds(450,100,250,25);
-				      panel_join.add(TakeLabel);
-				      
-				      JCheckBox[] courseList = new JCheckBox[24];
-				      courseList[0] = new JCheckBox("Ïª¥Ìì®ÌÑ∞ÌîÑÎ°úÍ∑∏ÎûòÎ∞ç");
-				      courseList[1] = new JCheckBox("ÏõπÌîÑÎ°úÍ∑∏ÎûòÎ∞ç");
-				      courseList[2] = new JCheckBox("Ïù¥ÏÇ∞ÏàòÌïô");
-				      courseList[3] = new JCheckBox("ÏÜåÌîÑÌä∏Ïõ®Ïñ¥Íµ¨ÌòÑÌå®ÌÑ¥");
-				      courseList[4] = new JCheckBox("Î°úÎ¥áÍ≥µÌïô");
-				      courseList[5] = new JCheckBox("ÌôïÎ•†ÌÜµÍ≥Ñ");
-				      courseList[6] = new JCheckBox("ÏûêÎ£åÍµ¨Ï°∞");
-				      courseList[7] = new JCheckBox("Í∞ùÏ≤¥ÏßÄÌñ•ÌîÑÎ°úÍ∑∏ÎûòÎ∞ç");
-				      courseList[8] = new JCheckBox("Ïö¥ÏòÅÏ≤¥Ï†ú");
-				      courseList[9] = new JCheckBox("Ïª¥Ìì®ÌÑ∞ÎÑ§Ìä∏ÏõåÌÅ¨");
-				      courseList[10] = new JCheckBox("ÏïåÍ≥†Î¶¨Ï¶ò");
-				      courseList[11] = new JCheckBox("Îç∞Ïù¥ÌÑ∞Î≤†Ïù¥Ïä§");
-				      courseList[12] = new JCheckBox("Î™®Î∞îÏùºÌîÑÎ°úÍ∑∏ÎûòÎ∞ç");
-				      courseList[13] = new JCheckBox("ÏÜåÌîÑÌä∏Ïõ®Ïñ¥ÏÇ∞ÏóÖÏÑ∏ÎØ∏ÎÇò");
-				      courseList[14] = new JCheckBox("ÏÜåÌîÑÌä∏Ïõ®Ïñ¥Í≥µÌïô");
-				      courseList[15] = new JCheckBox("Ïª¥Ìì®ÌÑ∞Í∑∏ÎûòÌîΩÏä§");
-				      courseList[16] = new JCheckBox("Í≥†Í∏âÏõπÌîÑÎ°úÍ∑∏ÎûòÎ∞ç");
-				      courseList[17] = new JCheckBox("Î∂ÑÏÇ∞ÏãúÏä§ÌÖú");
-				      courseList[18] = new JCheckBox("Ïª¥Ìì®ÌÑ∞Íµ¨Ï°∞");
-				      courseList[19] = new JCheckBox("Îç∞Ïù¥ÌÑ∞ÎßàÏù¥Îãù");
-				      courseList[20] = new JCheckBox("Î©ÄÌã∞ÎØ∏ÎîîÏñ¥");
-				      courseList[21] = new JCheckBox("ÏÜåÌîÑÌä∏Ïõ®Ïñ¥Ïã†Í∏∞Ïà†ÌäπÎ°†");
-				      courseList[22] = new JCheckBox("Ïª¥Ìì®ÌÑ∞Î≥¥Ïïà");
-				      courseList[23] = new JCheckBox("HCI");
-				      
-				      yAxis = 150;
-				      for(int i = 0; i < 24; i++){
-				    	  if(i%3 == 0){
-				    		  courseList[i].setFont(font2);
-				        	  courseList[i].setBounds(450,yAxis,200,25);
-				        	  panel_join.add(courseList[i]);
-				    	  }
-				    	  else if(i%3 == 1){
-				    		  courseList[i].setFont(font2);
-				        	  courseList[i].setBounds(650,yAxis,200,25);
-				        	  panel_join.add(courseList[i]);
-				    	  }
-				    	  else if(i%3 == 2){
-				    		  courseList[i].setFont(font2);
-				        	  courseList[i].setBounds(850,yAxis,200,25);
-				        	  panel_join.add(courseList[i]);
-				        	  yAxis += 40;
-				    	  }
-				    	  
-				      }
-				      f.getContentPane().add(panel_join);
-				        f.pack();
-				  f.setVisible(true);
-			}
-				}
-		);
+                  JTextField SNText = new JTextField(20);
+                  SNText.setBounds(200, 140, 150, 25);
+                  panel_join.add(SNText);
+                  
+                  JLabel YEARLabel = new JLabel("Year: ");
+                  YEARLabel.setFont(font1);
+                  YEARLabel.setBounds(10,180,80,25);
+                  panel_join.add(YEARLabel);
+                  Choice list;//«–≥‚
+                  list = new Choice();
+                  list.add("1«–≥‚");
+                  list.add("2«–≥‚");
+                  list.add("3«–≥‚");
+                  list.add("4«–≥‚");
+                  list.add("¥Î«–ø¯ª˝");
+                  list.add("¡πæ˜ª˝");
+                  list.setBounds(100,180,140,25);
+                  panel_join.add(list);
+                  JLabel LanguageLabel = new JLabel("Confident Language: ");
+                  LanguageLabel.setFont(font1);
+                  LanguageLabel.setBounds(10,240,250,25);
+                  panel_join.add(LanguageLabel);
+                  
+                  JCheckBox[] languageList = new JCheckBox[9];
+                  languageList[0] = new JCheckBox("C");
+                  languageList[1] = new JCheckBox("C++");
+                  languageList[2] = new JCheckBox("Java");
+                  languageList[3] = new JCheckBox("JavaScript");
+                  languageList[4] = new JCheckBox("Python");
+                  languageList[5] = new JCheckBox("PHP");
+                  languageList[6] = new JCheckBox("CSS");
+                  languageList[7] = new JCheckBox("HTML");
+                  languageList[8] = new JCheckBox("Others..");
+                  
+                  int yAxis = 280;
+                  for(int i = 0; i < 9; i++){
+                     if(i%2 == 0){
+                        languageList[i].setFont(font2);
+                        languageList[i].setBounds(10,yAxis,150,25);
+                         panel_join.add(languageList[i]);
+                     }
+                     else if(i%2 == 1){
+                        languageList[i].setFont(font2);
+                        languageList[i].setBounds(190,yAxis,150,25);
+                         panel_join.add(languageList[i]);
+                         yAxis += 40;
+                     }
+                     
+                  }
+                  
+                  JLabel TakeLabel = new JLabel("Taken/Taking Course: ");
+                  TakeLabel.setFont(font1);
+                  TakeLabel.setBounds(450,100,250,25);
+                  panel_join.add(TakeLabel);
+                  
+                  JCheckBox[] courseList = new JCheckBox[24];
+                  courseList[0] = new JCheckBox("ƒƒ«ª≈Õ«¡∑Œ±◊∑°π÷");
+                  courseList[1] = new JCheckBox("¿•«¡∑Œ±◊∑°π÷");
+                  courseList[2] = new JCheckBox("¿ÃªÍºˆ«–");
+                  courseList[3] = new JCheckBox("º“«¡∆Æø˛æÓ±∏«ˆ∆–≈œ");
+                  courseList[4] = new JCheckBox("∑Œ∫ø∞¯«–");
+                  courseList[5] = new JCheckBox("»Æ∑¸≈Î∞Ë");
+                  courseList[6] = new JCheckBox("¿⁄∑·±∏¡∂");
+                  courseList[7] = new JCheckBox("∞¥√º¡ˆ«‚«¡∑Œ±◊∑°π÷");
+                  courseList[8] = new JCheckBox("øÓøµ√º¡¶");
+                  courseList[9] = new JCheckBox("ƒƒ«ª≈Õ≥◊∆Æøˆ≈©");
+                  courseList[10] = new JCheckBox("æÀ∞Ì∏Æ¡Ú");
+                  courseList[11] = new JCheckBox("µ•¿Ã≈Õ∫£¿ÃΩ∫");
+                  courseList[12] = new JCheckBox("∏πŸ¿œ«¡∑Œ±◊∑°π÷");
+                  courseList[13] = new JCheckBox("º“«¡∆Æø˛æÓªÍæ˜ººπÃ≥™");
+                  courseList[14] = new JCheckBox("º“«¡∆Æø˛æÓ∞¯«–");
+                  courseList[15] = new JCheckBox("ƒƒ«ª≈Õ±◊∑°«»Ω∫");
+                  courseList[16] = new JCheckBox("∞Ì±ﬁ¿•«¡∑Œ±◊∑°π÷");
+                  courseList[17] = new JCheckBox("∫–ªÍΩ√Ω∫≈€");
+                  courseList[18] = new JCheckBox("ƒƒ«ª≈Õ±∏¡∂");
+                  courseList[19] = new JCheckBox("µ•¿Ã≈Õ∏∂¿Ã¥◊");
+                  courseList[20] = new JCheckBox("∏÷∆ºπÃµæÓ");
+                  courseList[21] = new JCheckBox("º“«¡∆Æø˛æÓΩ≈±‚º˙∆Ø∑–");
+                  courseList[22] = new JCheckBox("ƒƒ«ª≈Õ∫∏æ»");
+                  courseList[23] = new JCheckBox("HCI");
+                  
+                  yAxis = 150;
+                  for(int i = 0; i < 24; i++){
+                     if(i%3 == 0){
+                        courseList[i].setFont(font2);
+                         courseList[i].setBounds(450,yAxis,200,25);
+                         panel_join.add(courseList[i]);
+                     }
+                     else if(i%3 == 1){
+                        courseList[i].setFont(font2);
+                         courseList[i].setBounds(650,yAxis,200,25);
+                         panel_join.add(courseList[i]);
+                     }
+                     else if(i%3 == 2){
+                        courseList[i].setFont(font2);
+                         courseList[i].setBounds(850,yAxis,200,25);
+                         panel_join.add(courseList[i]);
+                         yAxis += 40;
+                     }
+                     
+                  }
+                  f.getContentPane().add(panel_join);
+                    f.pack();
+              f.setVisible(true);
+         }
+            }
+      );
 
-		menuBar.add(btnModification);
-		
-		JMenu mnPush = new JMenu("push");
-		mnPush.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "ÏïåÎ¶ºÎ©îÏÑ∏ÏßÄÏûÖÎãàÎã§.","ÏïåÎ¶ºÎ©îÏÑ∏ÏßÄ",JOptionPane.INFORMATION_MESSAGE);
-			}
-		});
-		menuBar.add(mnPush);
-		
-		JMenuItem mntmYes = new JMenuItem("yes");
-		mnPush.add(mntmYes);
-		
-		JMenuItem mntmNo = new JMenuItem("no");
-		mnPush.add(mntmNo);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
-		setContentPane(contentPane);
-		// panel
-		JPanel panel_Setting = new JPanel();
-		placeSettingPanel(panel_Setting);
+      menuBar.add(btnModification);
+      
+      JMenu mnPush = new JMenu("push");
+      menuBar.add(mnPush);
+      
+      JMenuItem mntmYes = new JMenuItem("yes");
+      mnPush.add(mntmYes);
 
-		// add
-		add(panel_Setting);
+      /*
+	   * mntmYes is push on 
+	   * when you click mntmYes,
+	   * update push information in the database to yes
+	   * you can receive Question window
+	  */
+      mntmYes.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent arg0) {
+            JOptionPane.showMessageDialog(mntmYes, "push on µ«æ˙Ω¿¥œ¥Ÿ.", "Title", JOptionPane.INFORMATION_MESSAGE, null);
+            dto.setName(MainView.id);
+            udto.setId(MainView.id);
+            dto.setPush(1);
+            udto.setPush(1);
+            try{
+                     InsertDAO.createPush(dto);
+                   UserInsertDAO.createPush(udto);
+            }catch(Exception e1){
+                     e1.printStackTrace();
+                  }
+            
+         }
+      });
+      
+      JMenuItem mntmNo = new JMenuItem("no");
+      mnPush.add(mntmNo);
+      
+      /*
+		 * mntmNo is push off 
+		 * when you click mntmNo,
+		 * update push information in the database to No
+		 * you will not receive Question window
+		 */
+      mntmNo.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent arg0) {
+            JOptionPane.showMessageDialog(mntmNo, "push off µ«æ˙Ω¿¥œ¥Ÿ.", "Title", JOptionPane.INFORMATION_MESSAGE, null);
+            dto.setId(MainView.id);
+            dto.setPush(0);
+            udto.setId(MainView.id);
+            udto.setPush(0);
+            try{
+                     InsertDAO.createPush(dto);
+                     UserInsertDAO.createPush(udto);
+            }catch(Exception e1){
+                     e1.printStackTrace();
+                   JOptionPane.showInputDialog(null,"Ω«∆–");
+                  }
+            
+         }
+      });
+      contentPane = new JPanel();
+      contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+      contentPane.setLayout(new BorderLayout(0, 0));
+      setContentPane(contentPane);
+      // panel
+      JPanel panel_Setting = new JPanel();
+      placeSettingPanel(panel_Setting);
 
-		// visiible
-		setVisible(true);
-	}
-	
-	public void placeSettingPanel(JPanel panel_Setting) {
-		panel_Setting.setLayout(null);
-		
-		btnReturn = new JButton(new ImageIcon("images//back.png"));
-		btnReturn.setBounds(300,200, 50, 50);
-		btnReturn.setBackground(Color.white);
-		btnReturn.setBorderPainted(false);
-		btnReturn.setFocusPainted(false);
-		btnReturn.setContentAreaFilled(false);
+      // add
+      add(panel_Setting);
 
-		panel_Setting.add(btnReturn);
-		btnReturn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				main.exitSetting();
-			}
-		});
-	}
-	
-	
-	public void setMain(MainProcess main) {
-		this.main = main;
-	}
+      // visiible
+      setVisible(true);
+   }
+   
+   /*
+	 * panel for return button
+	 */
+   public void placeSettingPanel(JPanel panel_Setting) {
+      panel_Setting.setLayout(null);
+      
+      btnReturn = new JButton(new ImageIcon("images//back.png"));
+      btnReturn.setBounds(300,200, 50, 50);
+      btnReturn.setBackground(Color.white);
+      btnReturn.setBorderPainted(false);
+      btnReturn.setFocusPainted(false);
+      btnReturn.setContentAreaFilled(false);
+
+      panel_Setting.add(btnReturn);
+      btnReturn.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            main.exitSetting();
+         }
+      });
+   }
+   
+   
+   public void setMain(MainProcess main) {
+      this.main = main;
+   }
 }

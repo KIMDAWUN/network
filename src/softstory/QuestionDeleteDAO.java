@@ -8,10 +8,10 @@ import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
 
 /*
- * SatisInsertDAO is used to when users answer the question,
- * plus the egg after the satisfaction survey
+ *QuestionDeleteDAO is used to when users asked the question,
+ *change the egg -2
  */
-public class SatisInsertDAO {
+public class QuestionDeleteDAO {
 	public static void main(String[] args) {
 		 
 	}
@@ -19,12 +19,12 @@ public class SatisInsertDAO {
 
 		boolean flag = false;
 		Connection con = null;
-		Statement stmt = null;
-		PreparedStatement pstmt = null;
+		Statement stmt = null;// sending the data
+		PreparedStatement pstmt = null; //expanding of statement
 		String id = Sdto.getId();
 		int star = Sdto.getStar();
 		
-		String satis_sql = "UPDATE member SET egg=egg+";
+		String satis_sql = "UPDATE member SET egg=egg-";
 
 		try {
 			satis_sql += star + " where id='" + id + "'";
